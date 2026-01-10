@@ -302,3 +302,20 @@ input:focus, select:focus {
 
 .chg.up { color: var(--ok); }
 .chg.down { color: var(--danger); }
+
+.pair{
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.sym{
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.ticker{
+  white-space: nowrap;
+  overflow-x: auto;
+}
