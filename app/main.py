@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 from app.connections.db_connections import init_db, log_event
 from app.connections.connections import connect_binance, connect_coinbase
 from app.logs.db_trades import log_trade
-from app.db import SessionLocal, BotEvent  # jeśli potrzebujesz logów SQLAlchemy
+
 
 app = FastAPI()
 
