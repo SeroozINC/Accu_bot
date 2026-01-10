@@ -15,9 +15,10 @@
 
     {% for e in events %}
     <tr>
-        <td>{{ e.id }}</td>
-        <td>{{ e.event }}</td>
-        <td>{{ e.timestamp }}</td>
+        <td>{{ e["id"] }}</td>
+        <td>{{ e["event"] }}</td>
+        <td>{{ e["level"] }}</td>
+        <td>{{ e["timestamp"] }}</td>
     </tr>
     {% endfor %}
 </table>
