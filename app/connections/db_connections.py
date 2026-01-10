@@ -10,6 +10,7 @@ def get_connection():
     return conn
 
 def init_db():
+    """Tworzy tabelę eventów bota jeśli nie istnieje"""
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
@@ -23,12 +24,16 @@ def init_db():
     conn.close()
 
 def log_event(event: str):
+    """Dodaje wpis eventu do bazy"""
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO bot_events (event) VALUES (?)", (event,))
+    cursor.execute(
+        "INSERT INTO bot_events (event) VALUES (?)",
+        (event,)
+    )
     conn.commit()
     conn.close()
 
-# Wywołaj init przy starcie
+# Wywołaj init przy starcie modułu (opcjonalnie)
 if __name__ == "__main__":
     init_db()

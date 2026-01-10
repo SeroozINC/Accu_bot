@@ -1,14 +1,15 @@
+# app/main.py
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from db import init_db, log_event, SessionLocal, BotEvent
-from connections import connect_binance, connect_coinbase
+from connections.connections import connect_binance, connect_coinbase
+from connections.db_connections import init_db, log_event, get_connection
 
 app = FastAPI()
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="ui/templates")
 
+# Inicjalizacja bazy i log startowy
 init_db()
 log_event("Bot start")
 
@@ -24,17 +25,19 @@ def connect(request: Request, exchange: str = Form(...)):
             log_event("Połączono z Binance")
         else:
             log_event("Błąd połączenia z Binance")
-    else:
+    elif exchange == "coinbase":
         ok = connect_coinbase()
         if ok:
             log_event("Połączono z Coinbase")
         else:
             log_event("Błąd połączenia z Coinbase")
 
-    # Pobieramy logi
-    session = SessionLocal()
-    events = session.query(BotEvent).order_by(BotEvent.id.desc()).all()
-    session.close()
+    # Pobranie logów z bazy
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM bot_events ORDER BY id DESC")
+    events = cursor.fetchall()
+    conn.close()
 
     return templates.TemplateResponse("status.html", {"request": request, "events": events})
 
@@ -46,4 +49,3 @@ if __name__ == "__main__":
         port=8000,
         reload=True
     )
-

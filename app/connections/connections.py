@@ -1,15 +1,15 @@
-from db import log_event
+# app/connections/connections.py
+from .db_connections import log_event
 
-# Możesz użyć prawdziwych SDK, ale na start robimy mocki,
-# żeby bot działał bez API keys.
+# Mockowe połączenia do giełd (na start bez API keys)
 
 def connect_binance():
     try:
         log_event("Próba połączenia z Binance")
         # tutaj normalnie: klient = Client(API_KEY, API_SECRET)
         return True
-    except:
-        log_event("Utrata połączenia z Binance")
+    except Exception as e:
+        log_event(f"Utrata połączenia z Binance: {e}")
         return False
 
 def connect_coinbase():
@@ -17,6 +17,6 @@ def connect_coinbase():
         log_event("Próba połączenia z Coinbase")
         # tutaj normalnie: client = CoinbaseAdvancedTradeClient(API_KEY, API_SECRET)
         return True
-    except:
-        log_event("Utrata połączenia z Coinbase")
+    except Exception as e:
+        log_event(f"Utrata połączenia z Coinbase: {e}")
         return False

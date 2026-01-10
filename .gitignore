@@ -3,6 +3,7 @@
 
 # Database / runtime data
 *.db
+*.sqlite
 
 # Python
 __pycache__/
