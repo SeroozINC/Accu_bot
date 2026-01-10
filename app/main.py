@@ -3,8 +3,8 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from connections.connections import connect_binance, connect_coinbase
-from connections.db_connections import init_db, log_event, get_connection
+from app.connections.connections import connect_binance, connect_coinbase
+from app.connections.db_connections import init_db, log_event, get_connection
 
 app = FastAPI()
 templates = Jinja2Templates(directory="ui/templates")
