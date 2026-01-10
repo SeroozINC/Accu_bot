@@ -293,3 +293,12 @@ input:focus, select:focus {
   height: 16px;
   background: var(--border);
 }
+
+.chg {
+  margin-left: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.chg.up { color: var(--ok); }
+.chg.down { color: var(--danger); }

@@ -5,94 +5,129 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{ title if title else "Accu_bot" }}</title>
 
-  <!-- Globalny CSS -->
   <link rel="stylesheet" href="/static/app.css" />
 </head>
-
-<script>
-  async function refreshPrices() {
-    try {
-      const res = await fetch("/api/prices", { cache: "no-store" });
-      const data = await res.json();
-
-      const btc = document.getElementById("btc");
-      const eth = document.getElementById("eth");
-      const src = document.getElementById("src");
-
-    if (btc) btc.textContent = (data.btc_usd == null) ? "—" : Number(data.btc_usd).toFixed(2);
-    if (eth) eth.textContent = (data.eth_usd == null) ? "—" : Number(data.eth_usd).toFixed(2);
-      if (src) src.textContent = data.source ? `src: ${data.source}` : "";
-    } catch (e) {
-      // nie psujemy UI jeśli API chwilowo nie działa
-    }
-  }
-
-  refreshPrices();
-  setInterval(refreshPrices, 10000);
-</script>
-
 <body>
 
-  <!-- GÓRNY PASEK -->
   <div class="topbar">
     <div class="topbar-inner">
 
-  <!-- LEWA STRONA: brand + menu -->
-  <div class="nav-left">
-    <div class="brand">
-      <div class="logo" aria-hidden="true"></div>
-      <div>
-        <h1>Accu_bot</h1>
-        <small>Panel sterowania</small>
+      <!-- LEWA: brand + dropdown menu -->
+      <div class="nav-left">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <h1>Accu_bot</h1>
+            <small>Panel sterowania</small>
+          </div>
+        </div>
+
+        <div class="dropdown">
+          <button class="btn dropdown-btn" type="button">☰ Menu</button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="/">Dashboard</a>
+            <a class="dropdown-item" href="/status">Logi bota</a>
+            <a class="dropdown-item" href="#" onclick="return false;">Strategie (wkrótce)</a>
+            <a class="dropdown-item" href="#" onclick="return false;">Interwał czasu (wkrótce)</a>
+            <a class="dropdown-item" href="#" onclick="return false;">Ustawienia (wkrótce)</a>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="dropdown">
-      <button class="btn dropdown-btn" type="button">
-        ☰ Menu
-      </button>
-      <div class="dropdown-menu">
-        <a class="dropdown-item" href="/">Dashboard</a>
-        <a class="dropdown-item" href="/status">Logi bota</a>
-        <a class="dropdown-item" href="#" onclick="return false;">Strategie (wkrótce)</a>
-        <a class="dropdown-item" href="#" onclick="return false;">Interwał czasu (wkrótce)</a>
-        <a class="dropdown-item" href="#" onclick="return false;">Ustawienia (wkrótce)</a>
+      <!-- ŚRODEK: ticker BTC/ETH -->
+      <div class="topbar-center">
+        <div class="ticker" id="ticker">
+          <span>
+            BTC:
+            <strong id="btc">—</strong>
+            <span id="btc24" class="chg">—</span>
+          </span>
+
+          <span class="sep"></span>
+
+          <span>
+            ETH:
+            <strong id="eth">—</strong>
+            <span id="eth24" class="chg">—</span>
+          </span>
+
+          <span class="sep"></span>
+
+          <span id="src" style="font-size:12px;">—</span>
+        </div>
       </div>
+
+      <!-- PRAWA: user/logout -->
+      <div class="userbox">
+        {% if user %}
+          <span class="pill">Zalogowany: <strong>{{ user }}</strong></span>
+          <form action="/logout" method="post" style="margin:0;">
+            <button class="btn btn-danger" type="submit">Wyloguj</button>
+          </form>
+        {% else %}
+          <span class="pill">Nie zalogowano</span>
+        {% endif %}
+      </div>
+
     </div>
   </div>
 
-  <!-- ŚRODEK: ticker BTC/ETH -->
-  <div class="topbar-center">
-    <div class="ticker" id="ticker">
-      <span>BTC: <strong id="btc">—</strong></span>
-      <span class="sep"></span>
-      <span>ETH: <strong id="eth">—</strong></span>
-      <span class="sep"></span>
-      <span id="src" style="font-size:12px;">—</span>
-    </div>
-  </div>
-
-  <!-- PRAWA STRONA: user/logout -->
-  <div class="userbox">
-    {% if user %}
-      <span class="pill">
-        Zalogowany: <strong>{{ user }}</strong>
-      </span>
-      <form action="/logout" method="post" style="margin:0;">
-        <button class="btn btn-danger" type="submit">Wyloguj</button>
-      </form>
-    {% else %}
-      <span class="pill">Nie zalogowano</span>
-    {% endif %}
-  </div>
-
-</div>
-  </div>
-
-  <!-- GŁÓWNA ZAWARTOŚĆ STRONY -->
   <main class="container">
     {% block content %}{% endblock %}
   </main>
+
+  <script>
+    function fmtPrice(x) {
+      if (x == null) return "—";
+      return Number(x).toLocaleString(undefined, { maximumFractionDigits: 2 });
+    }
+
+    function fmtPct(x) {
+      if (x == null) return "—";
+      const n = Number(x);
+      const sign = n > 0 ? "+" : "";
+      return `${sign}${n.toFixed(2)}%`;
+    }
+
+    function setPct(el, val) {
+      if (!el) return;
+      el.textContent = fmtPct(val);
+      el.classList.remove("up", "down");
+      if (val == null) return;
+      if (Number(val) > 0) el.classList.add("up");
+      else if (Number(val) < 0) el.classList.add("down");
+    }
+
+    async function refreshPrices() {
+      try {
+        // UWAGA: endpoint to /api/prices (nie app/price)
+        const res = await fetch("/api/prices", { cache: "no-store" });
+        const data = await res.json();
+
+        const btc = document.getElementById("btc");
+        const eth = document.getElementById("eth");
+        const btc24 = document.getElementById("btc24");
+        const eth24 = document.getElementById("eth24");
+        const src = document.getElementById("src");
+
+        if (btc) btc.textContent = fmtPrice(data.btc_usd);
+        if (eth) eth.textContent = fmtPrice(data.eth_usd);
+
+        setPct(btc24, data.btc_24h);
+        setPct(eth24, data.eth_24h);
+
+        if (src) {
+          const conv = data.convert ? ` ${data.convert}` : "";
+          src.textContent = data.source ? `src: ${data.source}${conv}` : "";
+        }
+      } catch (e) {
+        // nic — nie psujemy UI
+      }
+    }
+
+    refreshPrices();
+    setInterval(refreshPrices, 10000);
+  </script>
 
 </body>
 </html>
