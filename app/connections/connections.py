@@ -5,11 +5,11 @@ from .db_connections import log_event
 
 def connect_binance():
     try:
-        log_event("Próba połączenia z Binance")
+        log_event("Próba połączenia z Binance", level="INFO")
         # tutaj normalnie: klient = Client(API_KEY, API_SECRET)
         return True
     except Exception as e:
-        log_event(f"Utrata połączenia z Binance: {e}")
+        log_event(f"Utrata połączenia z Binance: {e}", level="ERROR")
         return False
 
 def connect_coinbase():

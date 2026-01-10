@@ -1,6 +1,7 @@
 # app/connections/db_connections.py
 import sqlite3
 from pathlib import Path
+from datetime import datetime
 
 DB_PATH = Path(__file__).parent / "db_connections.sqlite"
 
@@ -10,30 +11,35 @@ def get_connection():
     return conn
 
 def init_db():
-    """Tworzy tabelę eventów bota jeśli nie istnieje"""
+    """
+    Tworzy tabelę bot_events jeśli nie istnieje.
+    """
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS bot_events (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        event TEXT,
+        event TEXT NOT NULL,
+        level TEXT DEFAULT 'INFO',
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     )
     """)
     conn.commit()
     conn.close()
 
-def log_event(event: str):
-    """Dodaje wpis eventu do bazy"""
+def log_event(event: str, level: str = "INFO"):
+    """
+    Loguje event bota do bazy.
+    
+    Args:
+        event (str): Treść eventu.
+        level (str): Poziom eventu (INFO, WARNING, ERROR).
+    """
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO bot_events (event) VALUES (?)",
-        (event,)
+        "INSERT INTO bot_events (event, level, timestamp) VALUES (?, ?, ?)",
+        (event, level, datetime.utcnow())
     )
     conn.commit()
     conn.close()
-
-# Wywołaj init przy starcie modułu (opcjonalnie)
-if __name__ == "__main__":
-    init_db()
