@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.connections.db_connections import init_db, log_event
+from app.connections.db_connections import init_db, log_event, get_events
 from app.connections.connections import connect_binance, connect_coinbase
 from app.logs.db_trades import log_trade
 
