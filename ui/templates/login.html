@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="card" style="max-width: 520px; margin: 0 auto;">
+    <div class="card-header">
+      <h2 class="card-title">Logowanie</h2>
+    </div>
+    <p class="card-subtitle">Zaloguj się, aby przejść do panelu i łączyć się z giełdami.</p>
+
+    {% if error %}
+      <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    <form action="/login" method="post" style="margin-top: 14px;">
+      <div class="grid">
+        <div>
+          <label for="username">Login</label>
+          <input id="username" name="username" type="text" autocomplete="username" required />
+        </div>
+
+        <div>
+          <label for="password">Hasło</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" type="submit">Zaloguj</button>
+        <span style="color: var(--muted); font-size: 13px;">
+          Tip: hasło jest weryfikowane hashem z <code>.env</code>
+        </span>
+      </div>
+    </form>
+  </div>
+{% endblock %}

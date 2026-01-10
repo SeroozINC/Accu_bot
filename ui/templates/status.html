@@ -1,28 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Status Bota</title>
-</head>
-<body>
-<h2>Logi bota</h2>
+{% extends "base.html" %}
 
-<table border="1">
-    <tr>
-        <th>ID</th>
-        <th>Event</th>
-        <th>Czas</th>
-    </tr>
+{% block content %}
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Logi bota</h2>
+      <a class="btn" href="/">Powrót</a>
+    </div>
 
-    {% for e in events %}
-    <tr>
-        <td>{{ e["id"] }}</td>
-        <td>{{ e["event"] }}</td>
-        <td>{{ e["level"] }}</td>
-        <td>{{ e["timestamp"] }}</td>
-    </tr>
-    {% endfor %}
-</table>
+    <p class="card-subtitle">
+      Ostatnie zdarzenia zapisane w bazie eventów bota.
+    </p>
 
-<br><a href="/">Powrót</a>
-</body>
-</html>
+    {% if events and events|length > 0 %}
+      <table class="table" style="margin-top: 14px;">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Poziom</th>
+            <th>Event</th>
+            <th>Czas (UTC)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in events %}
+            {% set level = e.get("level", "INFO") %}
+            {% set lvl = level|lower %}
+            <tr>
+              <td>{{ e.get("id", "-") }}</td>
+              <td>
+                <span class="level
+                  {{ 'error' if lvl == 'error'
+                     else ('warn' if lvl in ['warn', 'warning']
+                     else 'info') }}">
+                  <span class="dot"></span>
+                  {{ level }}
+                </span>
+              </td>
+              <td>{{ e.get("event", "") }}</td>
+              <td>{{ e.get("timestamp", "") }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="alert">
+        Brak zapisanych eventów.
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

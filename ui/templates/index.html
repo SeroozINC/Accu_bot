@@ -1,18 +1,37 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Crypto Bot</title>
-</head>
-<body>
-<h2>Wybierz giełdę</h2>
+{% extends "base.html" %}
+{% block content %}
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Połączenie z giełdą</h2>
+      </div>
+      <p class="card-subtitle">Wybierz giełdę, aby wykonać testowy „connect” i zapisać eventy do bazy.</p>
 
-<form action="/connect" method="post">
-    <select name="exchange">
-        <option value="binance">Binance</option>
-        <option value="coinbase">Coinbase</option>
-    </select>
-    <button type="submit">Połącz</button>
-</form>
+      <form action="/connect" method="post" style="margin-top: 14px;">
+        <label for="exchange">Giełda</label>
+        <select id="exchange" name="exchange">
+          <option value="binance">Binance</option>
+          <option value="coinbase">Coinbase</option>
+        </select>
 
-</body>
-</html>
+        <div class="actions">
+          <button class="btn btn-primary" type="submit">Connect</button>
+          <a class="btn" href="/status" style="display:inline-block;">Zobacz logi</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Status</h2>
+      </div>
+      <p class="card-subtitle">
+        Tutaj później pokażemy: aktywną giełdę, stan bota, strategię, heartbeat itp.
+      </p>
+
+      <div class="alert">
+        Na razie: eventy trafiają do <b>db_connections.sqlite</b> (tabela <code>bot_events</code>).
+      </div>
+    </div>
+  </div>
+{% endblock %}
