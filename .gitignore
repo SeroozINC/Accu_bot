@@ -1,0 +1,23 @@
+# macOS
+.DS_Store
+
+# Database / runtime data
+*.db
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual env
+.venv/
+venv/
+
+# Env vars
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log

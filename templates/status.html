@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Status Bota</title>
+</head>
+<body>
+<h2>Logi bota</h2>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Event</th>
+        <th>Czas</th>
+    </tr>
+
+    {% for e in events %}
+    <tr>
+        <td>{{ e.id }}</td>
+        <td>{{ e.event }}</td>
+        <td>{{ e.timestamp }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<br><a href="/">Powrót</a>
+</body>
+</html>
