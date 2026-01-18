@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <!-- PAGE HEADER -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Configuration</h2>
+    </div>
+    <p class="card-subtitle">
+      Manage exchange connections and bot settings.
+    </p>
+  </div>
+
+  <!-- ================= BINANCE CONFIGURATION ================= -->
+  <div style="margin-top: 18px;">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Binance configuration</h2>
+        {% if binance_mainnet_saved or binance_testnet_saved %}
+          <span class="pill">Saved</span>
+        {% endif %}
+      </div>
+
+      <p class="card-subtitle">
+        Configure Binance API credentials. Start with <b>Testnet</b> for safety.
+      </p>
+
+      {% if saved_msg %}
+        <div class="alert alert-ok">{{ saved_msg }}</div>
+      {% endif %}
+      {% if error_msg %}
+        <div class="alert alert-error">{{ error_msg }}</div>
+      {% endif %}
+
+      <div class="alert" style="margin-top: 12px;">
+        Mainnet saved: <b>{{ "Yes" if binance_mainnet_saved else "No" }}</b> |
+        Testnet saved: <b>{{ "Yes" if binance_testnet_saved else "No" }}</b>
+        {% if profile_updated %}
+          | Last update: <b>{{ profile_updated }}</b>
+        {% endif %}
+      </div>
+
+      <!-- SAVE FORM -->
+      <form action="/configuration/binance" method="post" style="margin-top: 16px;">
+        <div>
+          <label for="binance_env">Environment</label>
+          <select id="binance_env" name="binance_env" required>
+            <option value="testnet">Testnet</option>
+            <option value="mainnet">Mainnet</option>
+          </select>
+        </div>
+
+        <div style="margin-top: 14px;">
+          <label for="binance_api_key">API Key</label>
+          <input
+            id="binance_api_key"
+            name="binance_api_key"
+            type="text"
+            placeholder="Paste your Binance API Key"
+            autocomplete="off"
+            required
+          />
+        </div>
+
+        <div style="margin-top: 14px;">
+          <label for="binance_api_secret">API Secret</label>
+          <input
+            id="binance_api_secret"
+            name="binance_api_secret"
+            type="password"
+            placeholder="Paste your Binance API Secret"
+            autocomplete="off"
+            required
+          />
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" type="submit">Save</button>
+        </div>
+      </form>
+
+      <!-- TEST CONNECTION FORM -->
+      <form action="/configuration/binance/test" method="post" style="margin-top: 10px;">
+        <div>
+          <label for="binance_env_test">Environment for test</label>
+          <select id="binance_env_test" name="binance_env" required>
+            <option value="testnet">Testnet</option>
+            <option value="mainnet">Mainnet</option>
+          </select>
+        </div>
+
+        <div class="actions">
+          <button class="btn" type="submit">Test connection</button>
+        </div>
+      </form>
+
+      <div class="alert" style="margin-top: 14px;">
+        API secrets are stored locally in SQLite. Encryption can be added later.
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= COINBASE (PLACEHOLDER) ================= -->
+  <div style="margin-top: 18px;">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Coinbase configuration</h2>
+      </div>
+      <p class="card-subtitle">
+        Coinbase integration will be added later.
+      </p>
+      <div class="alert">
+        Placeholder.
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= BOT CONFIGURATION (PLACEHOLDER) ================= -->
+  <div style="margin-top: 18px;">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Bot configuration</h2>
+      </div>
+      <p class="card-subtitle">
+        Strategy, intervals, risk management and execution mode.
+      </p>
+      <div class="alert">
+        Placeholder.
+      </div>
+    </div>
+  </div>
+{% endblock %}

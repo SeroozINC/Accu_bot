@@ -1,37 +1,102 @@
 {% extends "base.html" %}
+
 {% block content %}
-  <div class="grid grid-2">
-    <div class="card">
-      <div class="card-header">
-        <h2 class="card-title">Połączenie z giełdą</h2>
-      </div>
-      <p class="card-subtitle">Wybierz giełdę, aby wykonać testowy „connect” i zapisać eventy do bazy.</p>
 
-      <form action="/connect" method="post" style="margin-top: 14px;">
-        <label for="exchange">Giełda</label>
-        <select id="exchange" name="exchange">
-          <option value="binance">Binance</option>
-          <option value="coinbase">Coinbase</option>
-        </select>
+<div class="grid grid-2">
 
-        <div class="actions">
-          <button class="btn btn-primary" type="submit">Connect</button>
-          <a class="btn" href="/status" style="display:inline-block;">Zobacz logi</a>
-        </div>
-      </form>
+  <!-- Exchange selection -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Exchange connection</h2>
     </div>
 
-    <div class="card">
-      <div class="card-header">
-        <h2 class="card-title">Status</h2>
-      </div>
-      <p class="card-subtitle">
-        Tutaj później pokażemy: aktywną giełdę, stan bota, strategię, heartbeat itp.
-      </p>
+    <p class="card-subtitle">
+      Select one of your configured exchanges.
+    </p>
 
-      <div class="alert">
-        Na razie: eventy trafiają do <b>db_connections.sqlite</b> (tabela <code>bot_events</code>).
+    <div id="exErr" class="alert alert-error" style="display:none;"></div>
+    <div id="exOk" class="alert alert-ok" style="display:none;"></div>
+
+    <form id="exchangeForm" style="margin-top: 14px;">
+      <label for="exchange_id">Configured exchanges</label>
+      <select id="exchange_id" name="exchange_id"></select>
+
+      <div class="actions">
+        <button class="btn btn-primary" type="submit">Select</button>
+        <a class="btn" href="/configuration">Go to Configuration</a>
       </div>
+    </form>
+  </div>
+
+  <!-- Status -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Status</h2>
+    </div>
+
+    <p class="card-subtitle">
+      Active exchange connection status.
+    </p>
+
+    <div class="alert"
+         style="margin-top:12px; display:flex; align-items:center; justify-content:space-between;">
+      <div>
+        Active exchange:
+        <b id="activeExchangeLabel">—</b>
+      </div>
+
+      <!-- START = pending (no red flash) -->
+      <div id="exchangeStatus" class="conn-dot pending" title="Checking..."></div>
     </div>
   </div>
+
+</div>
+
+<!-- Balances -->
+<div style="margin-top: 18px;">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Balances</h2>
+      <button class="btn" type="button" onclick="loadBalances()">Refresh</button>
+    </div>
+
+    <p class="card-subtitle">
+      Read-only balances for the selected exchange.
+    </p>
+
+    <div id="balErr" class="alert alert-error" style="display:none;"></div>
+
+    <table class="table" style="margin-top: 14px;">
+      <thead>
+        <tr>
+          <th>Asset</th>
+          <th>Free</th>
+          <th>Locked</th>
+        </tr>
+      </thead>
+      <tbody id="balBody">
+        <tr>
+          <td colspan="3" style="color: var(--muted);">Checking connection...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Live events (optional; required if you want ws logs visible) -->
+<div class="card" style="margin-top:18px;">
+  <div class="card-header">
+    <h2 class="card-title">Live events (Binance Testnet)</h2>
+    <button class="btn" type="button" onclick="clearWsLog()">Clear</button>
+  </div>
+  <p class="card-subtitle">Streaming updates from Binance User Data Stream via backend WS proxy.</p>
+
+  <div id="wsLog" class="alert" style="margin-top:14px; max-height: 220px; overflow:auto; white-space: pre-wrap;"></div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+  <script src="/static/dashboard.js"></script>
+  <script src="/static/binance_user_stream.js"></script>
 {% endblock %}

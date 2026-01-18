@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{ title if title else "Accu_bot" }}</title>
-
   <link rel="stylesheet" href="/static/app.css" />
 </head>
 <body>
@@ -12,7 +11,7 @@
   <div class="topbar">
     <div class="topbar-inner">
 
-      <!-- LEWA: brand + dropdown -->
+      <!-- LEFT: brand -->
       <div class="nav-left">
         <div class="brand">
           <div class="logo" aria-hidden="true"></div>
@@ -21,20 +20,9 @@
             <small>Panel sterowania</small>
           </div>
         </div>
-
-        <div class="dropdown">
-          <button class="btn dropdown-btn" type="button">☰ Menu</button>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" href="/">Dashboard</a>
-            <a class="dropdown-item" href="/status">Logi bota</a>
-            <a class="dropdown-item" href="#" onclick="return false;">Strategie (wkrótce)</a>
-            <a class="dropdown-item" href="#" onclick="return false;">Interwał czasu (wkrótce)</a>
-            <a class="dropdown-item" href="#" onclick="return false;">Ustawienia (wkrótce)</a>
-          </div>
-        </div>
       </div>
 
-      <!-- ŚRODEK: TICKER -->
+      <!-- CENTER: TICKER -->
       <div class="topbar-center">
         <div class="ticker" id="ticker">
 
@@ -58,7 +46,7 @@
         </div>
       </div>
 
-      <!-- PRAWA: user/logout -->
+      <!-- RIGHT: user/logout -->
       <div class="userbox">
         {% if user %}
           <span class="pill">Zalogowany: <strong>{{ user }}</strong></span>
@@ -74,60 +62,35 @@
   </div>
 
   <main class="container">
-    {% block content %}{% endblock %}
+    <div class="app-shell">
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="card" style="padding: 12px;">
+          <div class="nav">
+            <a href="/" class="{% if active_page == 'dashboard' %}active{% endif %}">Dashboard</a>
+            <a href="/statistics" class="{% if active_page == 'statistics' %}active{% endif %}">Statistics</a>
+            <a href="/configuration" class="{% if active_page == 'configuration' %}active{% endif %}">Configuration</a>
+            <a href="/account" class="{% if active_page == 'account' %}active{% endif %}">Account settings</a>
+            <a href="/logs" class="{% if active_page == 'logs' %}active{% endif %}">Logs</a>
+          </div>
+        </div>
+      </aside>
+
+      <!-- CONTENT -->
+      <section>
+        {% block content %}{% endblock %}
+      </section>
+
+    </div>
   </main>
 
-  <!-- TICKER JS -->
-  <script>
-    function fmtPrice(x) {
-      if (x == null) return "—";
-      return Number(x).toLocaleString(undefined, { maximumFractionDigits: 2 });
-    }
+  <!-- Global JS helpers -->
+  <script src="/static/app.js"></script>
 
-    function fmtPct(x) {
-      if (x == null) return "—";
-      const n = Number(x);
-      const sign = n > 0 ? "+" : "";
-      return `${sign}${n.toFixed(2)}%`;
-    }
+  <!-- Prices ticker -->
+  <script src="/static/prices_ticker.js"></script>
 
-    function setPct(el, val) {
-      if (!el) return;
-      el.textContent = fmtPct(val);
-      el.classList.remove("up", "down");
-      if (val == null) return;
-      if (Number(val) > 0) el.classList.add("up");
-      else if (Number(val) < 0) el.classList.add("down");
-    }
-
-    async function refreshPrices() {
-      try {
-        const res = await fetch("/api/prices", { cache: "no-store" });
-        const data = await res.json();
-
-        const btc = document.getElementById("btc");
-        const eth = document.getElementById("eth");
-        const btc24 = document.getElementById("btc24");
-        const eth24 = document.getElementById("eth24");
-        const src = document.getElementById("src");
-
-        if (btc) btc.textContent = fmtPrice(data.btc_usd);
-        if (eth) eth.textContent = fmtPrice(data.eth_usd);
-
-        setPct(btc24, data.btc_24h);
-        setPct(eth24, data.eth_24h);
-
-        if (src) {
-          src.textContent = data.source ? `src: ${data.source} ${data.convert ?? ""}` : "";
-        }
-      } catch (e) {
-        // cisza – nie psujemy UI
-      }
-    }
-
-    refreshPrices();
-    setInterval(refreshPrices, 10000);
-  </script>
-
+  {% block scripts %}{% endblock %}
 </body>
 </html>
